@@ -101,7 +101,7 @@ class Proxy:
                 detail="Server configuration error.",
             )
         if x_api_key != expected_api_key:
-            logger.warning("Unauthorized access attempt with API Key: %s", x_api_key)
+            logger.warning("Unauthorized access attempt: invalid API key")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Forbidden: Invalid API Key.",

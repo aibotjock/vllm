@@ -19,6 +19,11 @@ import time
 
 from openai import OpenAI
 
+if __package__:
+    from .arithmetic import evaluate_arithmetic
+else:
+    from arithmetic import evaluate_arithmetic
+
 # Modify OpenAI's API key and API base to use vLLM's API server.
 openai_api_key = "empty"
 openai_api_base = "http://localhost:8000/v1"
@@ -31,7 +36,7 @@ def get_weather(location: str, unit: str):
 
 def calculate_expression(expression: str):
     try:
-        result = eval(expression)
+        result = evaluate_arithmetic(expression)
         return f"The result of {expression} is {result}"
     except Exception as e:
         return f"Could not calculate {expression}: {e}"
@@ -71,7 +76,7 @@ tools = [
                 "properties": {
                     "expression": {
                         "type": "string",
-                        "description": "Mathematical expression to evaluate, needs to be a valid Python expression",
+                        "description": "Arithmetic using numbers, parentheses, +, -, *, /, //, %, ** and unary +/-; maximum 256 characters, 16 operations, exponent magnitude 12 and intermediate magnitude 1e12. Names and function calls are not allowed.",
                     }
                 },
                 "required": ["expression"],
