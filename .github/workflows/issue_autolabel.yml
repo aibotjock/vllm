@@ -4,7 +4,6 @@ on:
     types: [opened, edited, reopened]
 permissions:
   issues: write          # needed so the workflow can add labels
-  contents: read
 concurrency:
   group: issue-labeler-${{ github.event.issue.number }}
   cancel-in-progress: true
@@ -316,6 +315,8 @@ jobs:
       - name: CC users for labeled issues
         if: steps.label-step.outputs.labels_added != '[]'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8.0.0
+        env:
+          LABELS_ADDED: ${{ steps.label-step.outputs.labels_added }}
         with:
           script: |
             // Configuration: Map labels to GitHub users to CC
@@ -342,7 +343,7 @@ jobs:
               // },
             };
             
-            const labelsAdded = JSON.parse('${{ steps.label-step.outputs.labels_added }}');
+            const labelsAdded = JSON.parse(process.env.LABELS_ADDED || '[]');
             core.notice(`Labels added: ${labelsAdded.join(', ')}`);
             
             // Get existing comments to check for already mentioned users
